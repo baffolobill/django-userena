@@ -1,14 +1,15 @@
 # -*- mode: python; coding: utf-8; -*-
+import hashlib
+import urllib
+import random
+import datetime
+
 from django.conf import settings
-from django.utils.hashcompat import sha_constructor
 from django.contrib.auth.models import SiteProfileNotAvailable
 from django.db.models import get_model
 
 from userena import settings as userena_settings
 
-import urllib, random, datetime
-
-from django.utils.hashcompat import md5_constructor
 
 def get_gravatar(email, size=80, default='identicon'):
     """ Get's a Gravatar for a email address.
@@ -48,7 +49,7 @@ def get_gravatar(email, size=80, default='identicon'):
 
     gravatar_url = '%(base_url)s%(gravatar_id)s?' % \
             {'base_url': base_url,
-             'gravatar_id': md5_constructor(email.lower()).hexdigest()}
+             'gravatar_id': hashlib.md5(email.lower()).hexdigest()}
 
     gravatar_url += urllib.urlencode({'s': str(size),
                                       'd': default})
@@ -95,8 +96,8 @@ def generate_sha1(string, salt=None):
 
     """
     if not salt:
-        salt = sha_constructor(str(random.random())).hexdigest()[:5]
-    hash = sha_constructor(salt+str(string)).hexdigest()
+        salt = hashlib.sha1(str(random.random())).hexdigest()[:5]
+    hash = hashlib.sha1(salt+str(string)).hexdigest()
 
     return (salt, hash)
 
